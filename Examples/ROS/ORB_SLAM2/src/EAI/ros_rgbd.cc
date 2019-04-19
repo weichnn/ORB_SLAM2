@@ -47,6 +47,7 @@ public:
         
     }
     ros::Publisher pose_pub;
+    tf::TransformBroadcaster odom_broadcaster;
     void GrabRGBD(const sensor_msgs::ImageConstPtr& msgRGB,const sensor_msgs::ImageConstPtr& msgD);
 
     ORB_SLAM2::System* mpSLAM;
@@ -71,7 +72,7 @@ int main(int argc, char **argv)
 
     ImageGrabber igb(&SLAM);
 
-    ros::Publisher pose_pub = nh.advertise<geometry_msgs::PoseStamped>("orb_pose", 100);
+    ros::Publisher pose_pub = nh.advertise<geometry_msgs::PoseStamped>("rgbd_camera_pose", 100);
     igb.pose_pub = pose_pub;
 
     message_filters::Subscriber<sensor_msgs::Image> rgb_sub(nh, "/camera/rgb/image_raw", 1);
@@ -81,7 +82,7 @@ int main(int argc, char **argv)
     sync.registerCallback(boost::bind(&ImageGrabber::GrabRGBD,&igb,_1,_2));
 
 
-    tf::TransformBroadcaster odom_broadcaster;
+    // tf::TransformBroadcaster odom_broadcaster;
 
 
     ros::spin();
@@ -140,6 +141,7 @@ void ImageGrabber::GrabRGBD(const sensor_msgs::ImageConstPtr& msgRGB,const senso
 
     tf::poseTFToMsg(new_transform, pose.pose);
     pose_pub.publish(pose);
+    odom_broadcaster.sendTransform(tf::StampedTransform(new_transform, ros::Time::now(), "map", "orb"));
 }
 
 
