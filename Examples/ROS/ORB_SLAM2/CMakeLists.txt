@@ -97,3 +97,13 @@ target_link_libraries(RGBD
 ${LIBS}
 )
 
+# Node for RGB-D camera
+rosbuild_add_executable(RGBD_tf
+src/EAI/ros_rgbd.cc
+)
+
+target_link_libraries(RGBD_tf
+${LIBS}
+)
+
+
