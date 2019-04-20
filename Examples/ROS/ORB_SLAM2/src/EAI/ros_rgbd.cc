@@ -125,6 +125,7 @@ void ImageGrabber::GrabRGBD(const sensor_msgs::ImageConstPtr& msgRGB,const senso
 
     cv::Mat Tcw = mpSLAM->TrackRGBD(cv_ptrRGB->image,cv_ptrD->image,cv_ptrRGB->header.stamp.toSec());
 
+
     geometry_msgs::PoseStamped pose;
     pose.header.stamp = ros::Time::now();
     pose.header.frame_id ="map";
@@ -141,7 +142,7 @@ void ImageGrabber::GrabRGBD(const sensor_msgs::ImageConstPtr& msgRGB,const senso
 
     tf::poseTFToMsg(new_transform, pose.pose);
     pose_pub.publish(pose);
-    odom_broadcaster.sendTransform(tf::StampedTransform(new_transform, ros::Time::now(), "map", "orb"));
+    odom_broadcaster.sendTransform(tf::StampedTransform(new_transform.inverse(), ros::Time::now(), "camera_rgb_optical_frame", "map"));
 }
 
 
